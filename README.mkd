@@ -1,0 +1,46 @@
+Configuration files
+===================
+
+Nothing spectacular here. Just some configuration files I use for work. These
+include:
+
+ + Complete Vim configuration geared towards JavaScript development
+ + Reference nginx virtual server with SSL and redirect from HHTP to HTTPS
+ + MongoDB configuration file for deploying as normal user
+
+Note about paths
+----------------
+
+Keep in mind that some paths in the configuration files may need to be
+modified. Best to grep the whole directory for `/home/foxbunny` and change that
+to whatever fits your situation.
+
+What's in vimfiles
+------------------
+
+The vimfiles contain a whole bunch of plugins and configuration options, but
+notably:
+
+ + Leader character is comma `,`
+ + NerdTree is opened with `,~`
+ + GUndo (graphical undo) is opened with `,u`
+ + FuzzyFinder opens with `,o` (replace current buffer) or `C-T` (new tab)
+ + Fugitive is included by default
+ + When quitting, session is saved in `~/.vim_sessions/default.vim`
+ + Default session can be restored with `,ss` at any time
+ + `Fgrep` command can be used to grep current directory for keywords
+ + `Space2Tab` and `Tab2Space` commands are available (they do what you think
+   they do)
+ + `,Backspace` will remove trailing spaces
+ + A few JavaScript snippets specific to the way I work are available
+ + JSLint runs automatically in the background and checks syntax (requires 
+   Node.js)
+ + `F8` and `F9` can be used to switch spelling on and off respectively
+ + Pathogen is installed for better organization of plugins
+ + ...
+
+Questions?
+----------
+
+If you have a question or a suggestion, feel free to open an issue in the
+[issue tracker](https://github.com/foxbunny/dotfiles/issues).
