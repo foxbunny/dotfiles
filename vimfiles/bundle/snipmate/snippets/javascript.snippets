@@ -1,0 +1,120 @@
+# Prototype
+snippet proto
+	${1:class_name}.prototype.${2:method_name} =
+	function(${3:first_argument}) {
+		${4:// body...}
+	};
+# Function
+snippet fun
+	function ${1:function_name}(${2:argument}) {
+		${3:// body...}
+	}
+# Anonymous Function
+snippet f
+	function(${1}) {${2}};
+# if
+snippet if
+	if (${1:true}) {
+		${2}
+	};
+# if ... else
+snippet ife
+	if (${1:true}) {
+		${2}
+	} else {
+		${3}
+	};
+# tertiary conditional
+snippet t
+	${1:/* condition */} ? ${2:a} : ${3:b}
+# switch
+snippet switch
+	switch(${1:expression}) {
+		case '${3:case}':
+			${4:// code}
+			break;
+		${5}
+		default:
+			${2:// code}
+	}
+# case
+snippet case
+	case '${1:case}':
+		${2:// code}
+		break;
+	${3}
+# for (...) {...}
+snippet for
+	for (var ${2:i} = 0; $2 < ${1:Things}.length; $2${3:++}) {
+		${4:$1[$2]}
+	};
+# for (...) {...} (Improved Native For-Loop)
+snippet forr
+	for (var ${2:i} = ${1:Things}.length - 1; $2 >= 0; $2${3:--}) {
+		${4:$1[$2]}
+	};
+# Array.prototype.forEach
+snippet fore
+	${1:array}.forEach(function(${2:item}) {
+		${3://body}
+	})
+# Array.prototype.map
+snippet map
+	${1:array}.map(function(${2:item}) {
+		${3://body}
+	})
+# Array.prototype.some
+snippet some
+	${1:array}.some(function(${2:item}) {
+		return ${3:condition};
+	})
+# while (...) {...}
+snippet wh
+	while (${1:/* condition */}) {
+		${2:/* code */}
+	}
+# do...while
+snippet do
+	do {
+		${2:/* code */}
+	} while (${1:/* condition */});
+# Object Method
+snippet :f
+	${1:method_name}: function(${2:attribute}) {
+		${4}
+	}${3:,}
+# require
+snippet req
+	var ${1:name} = require('${2:path}')${3:;}
+# setTimeout function
+snippet timeout
+	setTimeout(function() {${3}}${2}, ${1:10};
+# Get Elements
+snippet get
+	getElementsBy${1:TagName}('${2}')${3}
+# Get Element
+snippet gett
+	getElementBy${1:Id}('${2}')${3}
+# New Mongoose Schema
+snippet schema
+	${1:exports}.${2:MySchema} = new Schema({
+		${3:property}: ${4:description}
+	});
+# Module method
+snippet .method
+	${1:exports}.${2:method} = function(${3:arguments}) {
+		${4://body...}
+	};
+# Generic module memeber
+snippet .member
+	${1:exports}.${2:member} = ${3:value}${4:;}
+# Documentation
+snippet //doc
+	/**
+	 * ${1:title}
+	 * ${2:description}
+	 *
+	 * ${3:long description}
+	 *
+	 * ${4:@meta}
+	 */
