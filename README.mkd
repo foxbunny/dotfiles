@@ -39,6 +39,13 @@ notably:
  + Pathogen is installed for better organization of plugins
  + ...
 
+What's in Emacs
+---------------
+
+Frankly, I don't use Emacs very often so you probably won't be impressed. It
+has JS2 mode and some custom identation options that don't work very well for
+me (I use Vim for JavaScript).
+
 Questions?
 ----------
 
