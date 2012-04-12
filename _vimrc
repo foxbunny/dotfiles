@@ -127,7 +127,7 @@ autocmd BufRead *.py setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%
 
 "Unrecognized extensions
 autocmd BufNewFile,BufRead *.less setlocal ft=css
-autocmd BufNewFile,BufRead *.tpl setlocal ft=html
+autocmd BufNewFile,BufRead *.tpl setlocal ft=jst
 autocmd BufNewFile,BufRead *.xul  setlocal ft=xul 
 
 "Higlight current line only in insert mode
