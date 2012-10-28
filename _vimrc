@@ -34,7 +34,7 @@ let g:mapleader=","
 set t_Co=256
 
 " Color scheme for CLI vim
-colorscheme candycode
+"colorscheme candycode
 
 "Startup window size
 if has("gui_running")
@@ -49,6 +49,9 @@ if has("gui_running")
   set guifont=DejaVu\ Sans\ Mono\ 10
   set lines=999 columns=999
 
+  "Change default color scheme (uncomment line below)
+  "colorscheme desertEx
+
   "Enable Shift+Ins behavior
   map  <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
@@ -62,10 +65,10 @@ map <F8> <Esc>:setlocal spell spelllang=en_us<CR>
 map <F9> <Esc>:setlocal nospell<CR>
 
 "Run file with PHP CLI (CTRL-M)
-:autocmd FileType php noremap <C-M> <Esc>:w!<CR>:!php %<CR>
+"autocmd FileType php noremap <C-M> <Esc>:w!<CR>:!php %<CR>
 
 "PHP parser check (CTRL-L)
-:autocmd FileType php noremap <C-L> <Esc>:w!<CR>:!php -l %<CR>
+"autocmd FileType php noremap <C-L> <Esc>:w!<CR>:!php -l %<CR>
 
 "Tab settings
 set ai
@@ -108,15 +111,28 @@ autocmd FileType css setlocal sw=2
 autocmd FileType css setlocal ts=2
 autocmd FileType css setlocal sts=2
 "JavaScript tab settings (2-space tabs, 79chr right margin)
-autocmd FileType javascript setlocal textwidth=0
 autocmd FileType javascript setlocal sw=2
 autocmd FileType javascript setlocal ts=2
 autocmd FileType javascript setlocal sts=2
+"CoffeeScript tab settings (2-space tabs, 79chr right margin)
+autocmd FileType coffee setlocal sw=2
+autocmd FileType coffee setlocal ts=2
+autocmd FileType coffee setlocal sts=2
+"JST/EJS tab settings (2-space tabs, no right margin)
+autocmd FileType jst setlocal textwidth=0
+autocmd FileType jst setlocal sw=2
+autocmd FileType jst setlocal ts=2
+autocmd FileType jst setlocal sts=2
 "Jade tab settings (2-space tabs, no right margin)
 autocmd FileType jade setlocal textwidth=0
 autocmd FileType jade setlocal sw=2
 autocmd FileType jade setlocal ts=2
 autocmd FileType jade setlocal sts=2
+"Erlang tab settings (2-space tabs, no right margin)
+autocmd FileType erlang setlocal textwidth=79
+autocmd FileType erlang setlocal sw=4
+autocmd FileType erlang setlocal ts=4
+autocmd FileType erlang setlocal sts=4
 
 "Incremental search
 set incsearch
@@ -128,6 +144,7 @@ autocmd BufRead *.py setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%
 "Unrecognized extensions
 autocmd BufNewFile,BufRead *.less setlocal ft=css
 autocmd BufNewFile,BufRead *.tpl setlocal ft=jst
+autocmd BufNewFile,BufRead *.jstmpl setlocal ft=jst
 autocmd BufNewFile,BufRead *.xul  setlocal ft=xul 
 
 "Higlight current line only in insert mode
@@ -193,6 +210,14 @@ inoremap <silent> <C-t> <Esc>:tabnew<CR>:FufFile<CR>
 "Snap open
 noremap <silent> <leader>o :FufFile<CR>
 
+"Quick save
+noremap <silent> <C-s> :w<CR>
+inoremap <silent> <C-s> <Esc>:w<CR>
+
+"Quit
+noremap <silent> <C-q> :q<CR>
+inoremap <silent> <C-q> <Esc>:q<CR>
+
 "Custom status line
 set statusline=%<%F%h%m%r%h%w%y\ %{&ff}\ %=\ L:%l\,%L\ C:%c%V\ %P\ %{fugitive#statusline()}
 set laststatus=2
@@ -214,7 +239,23 @@ endfunction
 autocmd VimLeave * call SaveCurrentSession()
 
 "Clean up trailing spaces
-nnoremap <silent> <leader><Backspace> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
+function! <SID>StripTrailingWhitespaces()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+
+nnoremap <silent> <leader><Backspace> :call <SID>StripTrailingWhitespaces()<CR>
+autocmd BufWritePre *.jstmpl,*.css,*.coffee :call <SID>StripTrailingWhitespaces()
+
+"Coffeescript automatic compiling
+"autocmd BufWritePost *.coffee silent CoffeeMake! -b | cwindow | redraw!
 
 "Save undo history
 set undodir=~/.vim_undo
@@ -224,9 +265,15 @@ set undofile
 nnoremap <silent><leader>u <Esc>:GundoToggle<CR>
 
 "JavaScript: go to line above an insert blank line
-autocmd FileType javascript inoremap <buffer> <C-Return> <CR><Esc>O
+autocmd FileType javascript inoremap <buffer> <C-Return> <CR><Esc>A;<Esc>O
 
 "Searching
 set ignorecase
 set smartcase
 set incsearch
+
+"Hack to get around differences between X and BASH envs
+let $PATH=$PATH . ":~/local/bin"
+
+"Custom JavaScriptLint command
+let jslint_command="jsl -conf ~/.jslrc"
