@@ -1,0 +1,11 @@
+# Write your default config options here!
+alang=jp,en
+slang=en
+ao=jack
+fs=1
+monitoraspect=16:9
+vo=gl
+volume=20
+subfont-osd-scale=1
+subfont-text-scale=2
+nosub=1
