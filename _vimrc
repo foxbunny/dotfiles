@@ -33,9 +33,6 @@ let g:mapleader=","
 " 256 color support in CLI
 set t_Co=256
 
-" Color scheme for CLI vim
-"colorscheme candycode
-
 "Startup window size
 if has("gui_running")
   " GUI is running or is about to start.
@@ -55,7 +52,16 @@ if has("gui_running")
   "Enable Shift+Ins behavior
   map  <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
+  
+  "Set solarized background to light when in GUI mode
+  set background=dark
+else
+  "Set solarized background to dark when in CLI mode
+  set background=dark
 endif
+
+" Color scheme for CLI vim
+colorscheme solarized
 
 " Highlight 80 columns
 set colorcolumn=80
@@ -92,24 +98,31 @@ set smartcase
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType htmldjango setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType xhtml setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
 
-"HTML tab settings (2-space tabs, no right margin)
-autocmd FileType html setlocal sw=2
-autocmd FileType html setlocal ts=2
-autocmd FileType html setlocal sts=2
+"HTML tab settings (4-space tabs, no right margin)
+autocmd FileType html setlocal sw=4
+autocmd FileType html setlocal ts=4
+autocmd FileType html setlocal sts=4
 autocmd FileType html setlocal textwidth=0
-"XHTML tab settings (2-space tabs, no right margin)
-autocmd FileType xhtml setlocal sw=2
-autocmd FileType xhtml setlocal ts=2
-autocmd FileType xhtml setlocal sts=2
+"Django HTML tab settings (4-space tabs, no right margin)
+autocmd FileType htmldjango setlocal sw=4
+autocmd FileType htmldjango setlocal ts=4
+autocmd FileType htmldjango setlocal sts=4
+autocmd FileType htmldjango setlocal textwidth=0
+"XHTML tab settings (4-space tabs, no right margin)
+autocmd FileType xhtml setlocal sw=4
+autocmd FileType xhtml setlocal ts=4
+autocmd FileType xhtml setlocal sts=4
 autocmd FileType xhtml setlocal textwidth=0
-"CSS tab settings (2-space tabs, 79chr right margin)
-autocmd FileType css setlocal sw=2
-autocmd FileType css setlocal ts=2
-autocmd FileType css setlocal sts=2
+"CSS tab settings (4-space tabs, no right margin)
+autocmd FileType css setlocal sw=4
+autocmd FileType css setlocal ts=4
+autocmd FileType css setlocal sts=4
+autocmd FileType css setlocal textwidth=0
 "JavaScript tab settings (2-space tabs, 79chr right margin)
 autocmd FileType javascript setlocal sw=2
 autocmd FileType javascript setlocal ts=2
@@ -118,6 +131,11 @@ autocmd FileType javascript setlocal sts=2
 autocmd FileType coffee setlocal sw=2
 autocmd FileType coffee setlocal ts=2
 autocmd FileType coffee setlocal sts=2
+"BASH script settings (2-space tabs, no right margin)
+autocmd FileType sh setlocal textwidth=0
+autocmd FileType sh setlocal sw=4
+autocmd FileType sh setlocal ts=4
+autocmd FileType sh setlocal sts=4
 "JST/EJS tab settings (2-space tabs, no right margin)
 autocmd FileType jst setlocal textwidth=0
 autocmd FileType jst setlocal sw=2
@@ -153,6 +171,7 @@ autocmd InsertEnter * set cursorline
 
 "Map NERDTree to <leader>p
 nmap <silent> <leader>` :NERDTreeToggle<CR>  
+nmap <silent> <leader>f :NERDTreeFind<CR>
 
 "Use space to fold or unfold
 nnoremap <space> za
@@ -201,34 +220,56 @@ let OmniCpp_MayCompleteScope = 1
 let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
 set completeopt=menuone,menu,longest,preview
 
+"-----------------"
+" LEADER COMMANDS "
+"-----------------"
+
 "Tab navigation
 noremap <silent> <leader><Tab> :tabn<CR>
 noremap <silent> <leader><S-Tab> :tabp<CR>
 noremap <silent> <C-t> :tabnew<CR>:FufFile<CR>
 inoremap <silent> <C-t> <Esc>:tabnew<CR>:FufFile<CR>
 
+"Buffer navigation
+noremap <silent> <leader>j <C-w>j
+noremap <silent> <leader>k <C-w>k
+noremap <silent> <leader>h <C-w>h
+noremap <silent> <leader>l <C-w>l
+
+"Splitting
+noremap <silent> <leader>v :vsplit<CR>
+noremap <silent> <leader>p :split<CR>
+
 "Snap open
 noremap <silent> <leader>o :FufFile<CR>
 
+"Renew Fuf cache
+noremap <silent> <leader>r :FufRenewCache<CR>
+
 "Quick save
-noremap <silent> <C-s> :w<CR>
-inoremap <silent> <C-s> <Esc>:w<CR>
+noremap <silent> <leader>w :up<CR>
 
 "Quit
-noremap <silent> <C-q> :q<CR>
-inoremap <silent> <C-q> <Esc>:q<CR>
+noremap <silent> <leader>q :q<CR>
+
+"Django HTML template
+noremap <silent> <leader>d :set ft=htmldjango<CR>
+
+"Load default session
+nmap <silent> <leader>ss <Esc>:source ~/.vim_sessions/default.vim<CR>
+
+"Toggle display of invisible characters
+noremap <silent> <leader>\ :set list!<CR>
 
 "Custom status line
 set statusline=%<%F%h%m%r%h%w%y\ %{&ff}\ %=\ L:%l\,%L\ C:%c%V\ %P\ %{fugitive#statusline()}
 set laststatus=2
 
 "Invisible characters
-noremap <silent><leader>l :set list!<CR>
 set listchars=tab:⇥\ ,eol:↵
 set nolist "Don't show by default
 
 "Session management
-nmap <silent><leader>ss <Esc>:source ~/.vim_sessions/default.vim<CR>
 function! SaveCurrentSession()
     if v:this_session != ""
         exe "mksession! " . v:this_session
@@ -252,7 +293,7 @@ function! <SID>StripTrailingWhitespaces()
 endfunction
 
 nnoremap <silent> <leader><Backspace> :call <SID>StripTrailingWhitespaces()<CR>
-autocmd BufWritePre *.jstmpl,*.css,*.coffee :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.py,*.jstmpl,*.css,*.coffee :call <SID>StripTrailingWhitespaces()
 
 "Coffeescript automatic compiling
 "autocmd BufWritePost *.coffee silent CoffeeMake! -b | cwindow | redraw!
@@ -277,3 +318,4 @@ let $PATH=$PATH . ":~/local/bin"
 
 "Custom JavaScriptLint command
 let jslint_command="jsl -conf ~/.jslrc"
+
