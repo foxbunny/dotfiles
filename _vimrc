@@ -3,6 +3,8 @@ set nocompatible
 
 "UNIX line endings
 set fileformat=unix
+set fileformats=unix,dos
+set fileencodings=utf8,latin1
 
 "UTF-8 encoding
 set encoding=utf-8
@@ -43,24 +45,20 @@ if has("gui_running")
   set guioptions-=r
   set guioptions-=R
   set guioptions-=e
-  set guifont=DejaVu\ Sans\ Mono\ 10
+  if has("unix")
+    set guifont="DejaVu Sans Mono 10"
+  else
+    set guifont=DejaVu_Sans_Mono:h10:cANSI
+  endif
   set lines=999 columns=999
-
-  "Change default color scheme (uncomment line below)
-  "colorscheme desertEx
 
   "Enable Shift+Ins behavior
   map  <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
-  
-  "Set solarized background to light when in GUI mode
-  set background=dark
-else
-  "Set solarized background to dark when in CLI mode
-  set background=dark
 endif
 
 " Color scheme for CLI vim
+set background=light
 colorscheme solarized
 
 " Highlight 80 columns
@@ -69,12 +67,6 @@ set colorcolumn=80
 "Spelling mappings: F8 on / F9 off
 map <F8> <Esc>:setlocal spell spelllang=en_us<CR>
 map <F9> <Esc>:setlocal nospell<CR>
-
-"Run file with PHP CLI (CTRL-M)
-"autocmd FileType php noremap <C-M> <Esc>:w!<CR>:!php %<CR>
-
-"PHP parser check (CTRL-L)
-"autocmd FileType php noremap <C-L> <Esc>:w!<CR>:!php -l %<CR>
 
 "Tab settings
 set ai
@@ -131,6 +123,10 @@ autocmd FileType javascript setlocal sts=2
 autocmd FileType coffee setlocal sw=2
 autocmd FileType coffee setlocal ts=2
 autocmd FileType coffee setlocal sts=2
+"Literate CoffeeScript tab settings (2-space tabs, 79chr right margin)
+autocmd FileType litcoffee setlocal sw=2
+autocmd FileType litcoffee setlocal ts=2
+autocmd FileType litcoffee setlocal sts=2
 "BASH script settings (2-space tabs, no right margin)
 autocmd FileType sh setlocal textwidth=0
 autocmd FileType sh setlocal sw=4
@@ -151,6 +147,16 @@ autocmd FileType erlang setlocal textwidth=79
 autocmd FileType erlang setlocal sw=4
 autocmd FileType erlang setlocal ts=4
 autocmd FileType erlang setlocal sts=4
+"SCSS/SASS tab settings (2-space tabs, no right margin)
+autocmd FileType scss setlocal textwidth=0
+autocmd FileType scss setlocal sw=2
+autocmd FileType scss setlocal ts=2
+autocmd FileType scss setlocal sts=2
+"Underscore template
+autocmd FileType underscore_template setlocal textwidth=0
+autocmd FileType scss setlocal sw=2
+autocmd FileType scss setlocal ts=2
+autocmd FileType scss setlocal sts=2
 
 "Incremental search
 set incsearch
@@ -158,12 +164,14 @@ set incsearch
 "Buffer autocommands
 autocmd BufRead *.py setlocal makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
 autocmd BufRead *.py setlocal efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+autocmd BufRead volofile setlocal ft=javascript
 
 "Unrecognized extensions
-autocmd BufNewFile,BufRead *.less setlocal ft=css
-autocmd BufNewFile,BufRead *.tpl setlocal ft=jst
-autocmd BufNewFile,BufRead *.jstmpl setlocal ft=jst
-autocmd BufNewFile,BufRead *.xul  setlocal ft=xul 
+autocmd BufNewFile,BufRead,BufWrite *.less setlocal ft=css
+autocmd BufNewFile,BufRead,BufWrite *.jstmpl setlocal ft=jst
+autocmd BufNewFile,BufRead,BufWrite *.xul  setlocal ft=xul 
+autocmd BufNewFile,BufRead,BufWrite *.tpl setlocal ft=underscore_template
+autocmd BufNewFile,BufRead,BufWrite *.xml setlocal ft=underscore_template
 
 "Higlight current line only in insert mode
 autocmd InsertLeave * set nocursorline
@@ -200,6 +208,9 @@ autocmd FileType plaintex setlocal sts=2
 "Search in files using Fgrep command
 :command! -nargs=+ Fgrep execute "noautocmd silent lvimgrep /<args>/gj **" | lopen 20
 
+"Search for TODO items
+nnoremap <silent> <leader>t :Fgrep \\(TODO\\\|FIXME\\\|XXX\\)<CR>
+
 "Editing mutt email
 autocmd BufRead ~/tmp/mutt-* setlocal tw=72
 
@@ -227,8 +238,11 @@ set completeopt=menuone,menu,longest,preview
 "Tab navigation
 noremap <silent> <leader><Tab> :tabn<CR>
 noremap <silent> <leader><S-Tab> :tabp<CR>
-noremap <silent> <C-t> :tabnew<CR>:FufFile<CR>
-inoremap <silent> <C-t> <Esc>:tabnew<CR>:FufFile<CR>
+
+"CtrlP shortcuts
+noremap <silent> <C-T> :tabnew<CR>:CtrlP<CR>
+inoremap <silent> <C-T> <Esc>:tabnew<CR>:CtrlP<CR>
+noremap <silent> <leader>o :CtrlP<CR>
 
 "Buffer navigation
 noremap <silent> <leader>j <C-w>j
@@ -239,12 +253,6 @@ noremap <silent> <leader>l <C-w>l
 "Splitting
 noremap <silent> <leader>v :vsplit<CR>
 noremap <silent> <leader>p :split<CR>
-
-"Snap open
-noremap <silent> <leader>o :FufFile<CR>
-
-"Renew Fuf cache
-noremap <silent> <leader>r :FufRenewCache<CR>
 
 "Quick save
 noremap <silent> <leader>w :up<CR>
@@ -295,6 +303,15 @@ endfunction
 nnoremap <silent> <leader><Backspace> :call <SID>StripTrailingWhitespaces()<CR>
 autocmd BufWritePre *.py,*.jstmpl,*.css,*.coffee :call <SID>StripTrailingWhitespaces()
 
+"Convert to UNIX line endings
+function! ConvertToUnix()
+    exe "update"
+    exe "e ++ff=dos"
+    exe "setlocal ff=unix"
+    exe "w"
+endfunction
+nnoremap <silent> <leader>00 :call ConvertToUnix()<CR>
+
 "Coffeescript automatic compiling
 "autocmd BufWritePost *.coffee silent CoffeeMake! -b | cwindow | redraw!
 
@@ -306,7 +323,10 @@ set undofile
 nnoremap <silent><leader>u <Esc>:GundoToggle<CR>
 
 "JavaScript: go to line above an insert blank line
-autocmd FileType javascript inoremap <buffer> <C-Return> <CR><Esc>A;<Esc>O
+autocmd FileType javascript inoremap {<CR> {<CR>}<Esc><S-o>
+
+"Bash insert double squares for conditionals
+autocmd FileType sh inoremap [[<Space> [[<Space><Space>]]<Esc>hhi
 
 "Searching
 set ignorecase
@@ -316,6 +336,6 @@ set incsearch
 "Hack to get around differences between X and BASH envs
 let $PATH=$PATH . ":~/local/bin"
 
-"Custom JavaScriptLint command
-let jslint_command="jsl -conf ~/.jslrc"
-
+"Auto-fix typos
+inoremap requri requir
+inoremap yoru your
