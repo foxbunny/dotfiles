@@ -181,6 +181,9 @@ autocmd InsertEnter * set cursorline
 nmap <silent> <leader>` :NERDTreeToggle<CR>  
 nmap <silent> <leader>f :NERDTreeFind<CR>
 
+"NERDTree ignores
+let NERDTreeIgnore = ['\.pyc$']
+
 "Use space to fold or unfold
 nnoremap <space> za
 
