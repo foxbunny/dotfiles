@@ -1,0 +1,97 @@
+# UMD wrapper for browser only
+snippet umd
+	define = ((root) ->
+		if typeof root.define is 'function' and define.amd
+			root.define
+		else
+			require = (dep) ->
+				(() ->
+					switch dep
+					when '${1:underscore}' then root.${2:$1}
+					else null
+				)() or throw new Error "Unmet dependency #{dep}"
+			(factory) ->
+				module = factory(require)
+				root.${3} = module
+	)(@)
+
+	define (require) ->
+		${4}
+# UMD wrapper for NodeJS and browser
+snippet umdnode
+	define = ((root) ->
+		if typeof root.define is 'function' and define.amd
+			root.define
+		else
+			if typeof module is 'object' and module.exports
+				(factory) ->
+					module.exports = factory(root.require)
+			else
+				require = (dep) ->
+					(() ->
+						switch dep
+						when ${1} then ${2}
+						else null
+					)() or throw new Error "Unmet dependency #{dep}"
+				(factory) ->
+					module = factory(require)
+					root.${3} = module
+	)(@)
+
+	define (require) ->
+		${4}
+# UMD wrapper without dependencies
+snippet umdnodep
+	define = ((root) ->
+		if typeof root.define is 'function' and define.amd
+			root.define
+		else
+			(factory) ->
+				module = factory()
+				root.${3} = module
+	)(@)
+
+	define () ->
+		${4}
+# when x then y
+snippet whth
+	when ${1} then ${2}
+# for x in y
+snippet forin
+	for ${1:} in ${2}
+		${3:$1}
+# for x, y in z
+snippet forini
+	for ${1:}, ${2} in ${3}
+		${4:$1}
+# for x of y
+snippet forof
+	for ${1:} of ${2}
+		${3:$1}
+# class
+snippet cls
+	class ${1}
+		constructor: () -> ${2}
+# class that extends
+snippet ext
+	class ${1} extends ${2}
+		constructor: () -> ${3}
+# Call method on super
+snippet sup
+	${1}::${2}.call ${3:@}
+# Apply method on super
+snippet supa
+	${1}::${2}.apply ${3:@}, ${4:[]}
+# Immediately invoked function expression
+snippet iife
+	((${2}) ->
+		${3}
+	)(${1:@})
+# List comprehension
+snippet comp
+	(${3:$2} for ${2:v} in ${1:arr})
+# Deluxe list comprehension
+snippet dcomp
+	((${3:$2}) ->
+		${4}
+	)($2) for ${2:v} in ${1:arr}

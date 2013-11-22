@@ -58,8 +58,7 @@ if has("gui_running")
 endif
 
 " Color scheme for CLI vim
-set background=light
-colorscheme solarized
+colorscheme darkspectrum
 
 " Highlight 80 columns
 set colorcolumn=80
@@ -87,7 +86,7 @@ set ignorecase
 set smartcase
 
 "Autocomplete options
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+"autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType htmldjango setlocal omnifunc=htmlcomplete#CompleteTags
@@ -127,6 +126,10 @@ autocmd FileType coffee setlocal sts=2
 autocmd FileType litcoffee setlocal sw=2
 autocmd FileType litcoffee setlocal ts=2
 autocmd FileType litcoffee setlocal sts=2
+"LiveScript
+autocmd FileType ls setlocal sw=2
+autocmd FileType ls setlocal ts=2
+autocmd FileType ls setlocal sts=2
 "BASH script settings (2-space tabs, no right margin)
 autocmd FileType sh setlocal textwidth=0
 autocmd FileType sh setlocal sw=4
@@ -183,6 +186,12 @@ nmap <silent> <leader>f :NERDTreeFind<CR>
 
 "NERDTree ignores
 let NERDTreeIgnore = ['\.pyc$']
+
+"Ctrl-P ignores
+let g:ctrlp_custom_ignore = {
+            \ 'dir':  '\v[\/]\.(git|hg|svn|sass-cache)$',
+            \ 'file': '\v\.(exe|so|dll|pyc|swp|swo)$',
+            \ }
 
 "Use space to fold or unfold
 nnoremap <space> za
@@ -304,7 +313,7 @@ function! <SID>StripTrailingWhitespaces()
 endfunction
 
 nnoremap <silent> <leader><Backspace> :call <SID>StripTrailingWhitespaces()<CR>
-autocmd BufWritePre *.py,*.jstmpl,*.css,*.coffee :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.py,*.jstmpl,*.css,*.coffee,*.ls :call <SID>StripTrailingWhitespaces()
 
 "Convert to UNIX line endings
 function! ConvertToUnix()
@@ -313,10 +322,29 @@ function! ConvertToUnix()
     exe "setlocal ff=unix"
     exe "w"
 endfunction
-nnoremap <silent> <leader>00 :call ConvertToUnix()<CR>
 
-"Coffeescript automatic compiling
-"autocmd BufWritePost *.coffee silent CoffeeMake! -b | cwindow | redraw!
+"Convert to DOS line endings
+function! ConvertToDos()
+    exe "update"
+    exe "e ++ff=unix"
+    exe "setlocal ff=dos"
+    exe "w"
+endfunction
+
+nnoremap <silent> <leader>00 :call ConvertToUnix()<CR>
+nnoremap <silent> <leader>09 :call ConvertToDos()<CR>
+
+" Virutalenv support
+py << EOF
+import os.path
+import sys
+import vim
+if 'VIRTUAL_ENV' in os.environ:
+    project_base_dir = os.environ['VIRTUAL_ENV']
+    sys.path.insert(0, project_base_dir)
+    activate_this = os.path.join(project_base_dir, 'Scripts\\activate_this.py')
+    execfile(activate_this, dict(__file__=activate_this))
+EOF
 
 "Save undo history
 set undodir=~/.vim_undo
@@ -339,6 +367,14 @@ set incsearch
 "Hack to get around differences between X and BASH envs
 let $PATH=$PATH . ":~/local/bin"
 
+"Ropevim
+let ropevim_vim_completion = 1
+let ropevim_extended_complete = 0
+let ropevim_goto_def_newwin = 1
+let g:ropevim_autoimport_modules = ["os.*","traceback","django.*"]
+autocmd FileType python setlocal omnifunc=RopeCompleteFunc
+
 "Auto-fix typos
 inoremap requri requir
 inoremap yoru your
+

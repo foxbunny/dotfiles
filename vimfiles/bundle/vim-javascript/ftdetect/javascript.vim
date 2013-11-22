@@ -1,11 +1,6 @@
-au BufNewFile,BufRead *.js setf javascript
-au BufNewFile,BufRead *.jsm setf javascript
-au BufNewFile,BufRead *.json setf javascript
-au BufNewFile,BufRead Jakefile setf javascript
-
-fun! s:SelectJavascript()
-  if getline(1) =~# '^#!.*/bin/env\s\+node\>'
-    set ft=javascript
-  endif
-endfun
-au BufNewFile,BufRead * call s:SelectJavascript()
+function! s:DetectJS()
+    if getline(1) =~# '^#!.*/bin/env\s\+node\>'
+        setfiletype javascript
+    endif
+endfunction
+autocmd BufNewFile,BufRead * call s:DetectJS()
