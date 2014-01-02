@@ -8,8 +8,30 @@
 "             See http://sam.zoy.org/wtfpl/COPYING for more details.
 "
 "============================================================================
-function! SyntaxCheckers_ruby_GetLocList()
-    let makeprg = 'RUBYOPT= macruby -W1 -c '.shellescape(expand('%'))
-    let errorformat =  '%-GSyntax OK,%E%f:%l: syntax error\, %m,%Z%p^,%W%f:%l: warning: %m,%Z%p^,%W%f:%l: %m,%-C%.%#'
-    return SyntasticMake({ 'makeprg': makeprg, 'errorformat': errorformat })
+if exists("g:loaded_syntastic_ruby_macruby_checker")
+    finish
+endif
+let g:loaded_syntastic_ruby_macruby_checker=1
+
+function! SyntaxCheckers_ruby_macruby_GetLocList() dict
+    let makeprg = self.makeprgBuild({
+        \ 'exe': 'RUBYOPT= ' . self.getExec(),
+        \ 'args': '-W1 -c' })
+
+    let errorformat =
+        \ '%-GSyntax OK,'.
+        \ '%E%f:%l: syntax error\, %m,'.
+        \ '%Z%p^,'.
+        \ '%W%f:%l: warning: %m,'.
+        \ '%Z%p^,'.
+        \ '%W%f:%l: %m,'.
+        \ '%-C%.%#'
+
+    return SyntasticMake({
+        \ 'makeprg': makeprg,
+        \ 'errorformat': errorformat })
 endfunction
+
+call g:SyntasticRegistry.CreateAndRegisterChecker({
+    \ 'filetype': 'ruby',
+    \ 'name': 'macruby'})

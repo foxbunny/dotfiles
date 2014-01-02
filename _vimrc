@@ -175,6 +175,7 @@ autocmd BufNewFile,BufRead,BufWrite *.jstmpl setlocal ft=jst
 autocmd BufNewFile,BufRead,BufWrite *.xul  setlocal ft=xul 
 autocmd BufNewFile,BufRead,BufWrite *.tpl setlocal ft=underscore_template
 autocmd BufNewFile,BufRead,BufWrite *.xml setlocal ft=underscore_template
+autocmd BufNewFile,BufRead,BufWrite *.ejs setlocal ft=jst
 
 "Higlight current line only in insert mode
 autocmd InsertLeave * set nocursorline
@@ -192,6 +193,10 @@ let g:ctrlp_custom_ignore = {
             \ 'dir':  '\v[\/]\.(git|hg|svn|sass-cache)$',
             \ 'file': '\v\.(exe|so|dll|pyc|swp|swo)$',
             \ }
+
+"Toggle rainbow parens
+nmap <silent> <leader>r :RainbowParenthesesToggle<CR>
+nmap <silent> <leader>( :RainbowParenthesesLoadRound<CR>
 
 "Use space to fold or unfold
 nnoremap <space> za
@@ -371,7 +376,6 @@ let $PATH=$PATH . ":~/local/bin"
 let ropevim_vim_completion = 1
 let ropevim_extended_complete = 0
 let ropevim_goto_def_newwin = 1
-let g:ropevim_autoimport_modules = ["os.*","traceback","django.*"]
 autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 
 "Auto-fix typos
