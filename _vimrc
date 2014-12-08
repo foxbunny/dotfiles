@@ -47,8 +47,10 @@ if has("gui_running")
   set guioptions-=e
   if has("unix")
     set guifont="DejaVu Sans Mono 10"
+    set guifontwide="MS Gothic 10"
   else
     set guifont=DejaVu_Sans_Mono:h10:cANSI
+    set guifontwide=MS_Gothic:h10
   endif
   set lines=999 columns=999
 
@@ -58,7 +60,7 @@ if has("gui_running")
 endif
 
 " Color scheme for CLI vim
-colorscheme darkspectrum
+colorscheme summerfruit256
 
 " Highlight 80 columns
 set colorcolumn=80
@@ -95,10 +97,10 @@ autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
 
 "HTML tab settings (4-space tabs, no right margin)
-autocmd FileType html setlocal sw=4
-autocmd FileType html setlocal ts=4
-autocmd FileType html setlocal sts=4
 autocmd FileType html setlocal textwidth=0
+"C tab settings (4-space tabs, no right margin, using tabs instead of spaces)
+autocmd FileType c setlocal textwidth=80
+autocmd FileType c setlocal noexpandtab
 "Django HTML tab settings (4-space tabs, no right margin)
 autocmd FileType htmldjango setlocal sw=4
 autocmd FileType htmldjango setlocal ts=4
@@ -110,9 +112,9 @@ autocmd FileType xhtml setlocal ts=4
 autocmd FileType xhtml setlocal sts=4
 autocmd FileType xhtml setlocal textwidth=0
 "CSS tab settings (4-space tabs, no right margin)
-autocmd FileType css setlocal sw=4
-autocmd FileType css setlocal ts=4
-autocmd FileType css setlocal sts=4
+autocmd FileType css setlocal sw=2
+autocmd FileType css setlocal ts=2
+autocmd FileType css setlocal sts=2
 autocmd FileType css setlocal textwidth=0
 "JavaScript tab settings (2-space tabs, 79chr right margin)
 autocmd FileType javascript setlocal sw=2
@@ -207,6 +209,9 @@ set foldlevelstart=1
 
 "Enable folding in JavaScript
 let javascript_fold=1
+
+"Run Clojure tests
+nmap <silent> cpt :Eval (clojure.test/run-tests)<CR>
 
 "Settings recommended by Vim-LaTeX
 set grepprg=grep\ -nH\ $*
@@ -347,7 +352,8 @@ import vim
 if 'VIRTUAL_ENV' in os.environ:
     project_base_dir = os.environ['VIRTUAL_ENV']
     sys.path.insert(0, project_base_dir)
-    activate_this = os.path.join(project_base_dir, 'Scripts\\activate_this.py')
+    act_pfx = sys.platform == 'win32' and 'Scripts' or 'bin'
+    activate_this = os.path.join(project_base_dir, act_pfx, 'activate_this.py')
     execfile(activate_this, dict(__file__=activate_this))
 EOF
 
@@ -372,11 +378,18 @@ set incsearch
 "Hack to get around differences between X and BASH envs
 let $PATH=$PATH . ":~/local/bin"
 
-"Ropevim
-let ropevim_vim_completion = 1
-let ropevim_extended_complete = 0
-let ropevim_goto_def_newwin = 1
-autocmd FileType python setlocal omnifunc=RopeCompleteFunc
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+"
+" originally from: http://vim.wikia.com/wiki/Modeline_magic
+function! AppendModeline()
+  let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+        \ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 
 "Auto-fix typos
 inoremap requri requir
