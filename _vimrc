@@ -10,7 +10,7 @@ set fileencodings=utf8,latin1
 set encoding=utf-8
 
 "Use syntax highlighting
-syntax on
+syntax off
 
 "Show the right margin
 set showtabline=2
@@ -46,13 +46,14 @@ if has("gui_running")
   set guioptions-=R
   set guioptions-=e
   if has("unix")
-    set guifont="DejaVu Sans Mono 10"
-    set guifontwide="MS Gothic 10"
+    set guifont="DejaVu Sans Mono 11"
+    set guifontwide="MS Gothic 11"
   else
-    set guifont=DejaVu_Sans_Mono:h10:cANSI
-    set guifontwide=MS_Gothic:h10
+    set guifont=DejaVu_Sans_Mono:h11:cANSI
+    set guifontwide=MS_Gothic:h11
   endif
   set lines=999 columns=999
+  au GUIEnter * simalt ~x
 
   "Enable Shift+Ins behavior
   map  <S-Insert> <MiddleMouse>
@@ -60,7 +61,7 @@ if has("gui_running")
 endif
 
 " Color scheme for CLI vim
-colorscheme summerfruit256
+colorscheme darkZ
 
 " Highlight 80 columns
 set colorcolumn=80
@@ -89,6 +90,7 @@ set smartcase
 
 "Autocomplete options
 "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType python setlocal omnifunc=RopeCompleteFunc
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType htmldjango setlocal omnifunc=htmlcomplete#CompleteTags
@@ -196,6 +198,9 @@ let g:ctrlp_custom_ignore = {
             \ 'file': '\v\.(exe|so|dll|pyc|swp|swo)$',
             \ }
 
+"Open location list
+nmap <silent> <leader>e :lop<CR>
+
 "Toggle rainbow parens
 nmap <silent> <leader>r :RainbowParenthesesToggle<CR>
 nmap <silent> <leader>( :RainbowParenthesesLoadRound<CR>
@@ -205,7 +210,6 @@ nnoremap <space> za
 
 "Folding config
 set foldmethod=syntax
-set foldlevelstart=1
 
 "Enable folding in JavaScript
 let javascript_fold=1
@@ -314,8 +318,7 @@ function! <SID>StripTrailingWhitespaces()
     " Preparation: save last search, and cursor position.
     let _s=@/
     let l = line(".")
-    let c = col(".")
-    " Do the business:
+    let c = col(".") " Do the business:
     %s/\s\+$//e
     " Clean up: restore previous search history, and cursor position
     let @/=_s
@@ -344,7 +347,7 @@ endfunction
 nnoremap <silent> <leader>00 :call ConvertToUnix()<CR>
 nnoremap <silent> <leader>09 :call ConvertToDos()<CR>
 
-" Virutalenv support
+" Virutalenv support (DISABLED)
 py << EOF
 import os.path
 import sys
@@ -390,6 +393,17 @@ function! AppendModeline()
   call append(line("$"), l:modeline)
 endfunction
 nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+
+" Syntastic 
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 1
+let g:syntastic_python_checkers = ["pyflakes"]
+hi SyntasticError guifg=red
+
+" SuperTab
+let g:SuperTabDefaultCompletionType = "<c-o>"
 
 "Auto-fix typos
 inoremap requri requir
